@@ -1,0 +1,33 @@
+{
+  "name": "yuvaz-mental-wellness-tracker",
+  "version": "1.0.0",
+  "description": "YuvaZ – AI-powered mental wellness companion for Indian competitive exam aspirants (JEE, NEET, UPSC, CAT, GATE, SSC, Banking, CUET)",
+  "author": "YuvaZ Team",
+  "license": "MIT",
+  "homepage": "https://github.com/Aarushi2259/YuvaZ-MentalWellnessTracker",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Aarushi2259/YuvaZ-MentalWellnessTracker.git"
+  },
+  "keywords": [
+    "mental-wellness", "jee", "neet", "upsc", "cat", "ai", "student-wellbeing",
+    "burnout", "anxiety", "exam-prep", "india", "generative-ai", "pwa"
+  ],
+  "scripts": {
+    "start": "npx serve . -l 3000",
+    "dev": "npx live-server --port=3000 --open=/",
+    "test": "npx jest --testPathPattern=tests/",
+    "lint": "npx eslint js/**/*.js",
+    "serve": "python -m http.server 3000"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "eslint": "^8.0.0",
+    "live-server": "^1.2.2",
+    "serve": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "private": false
+}
