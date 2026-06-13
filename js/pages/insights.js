@@ -74,8 +74,8 @@ function renderInsights() {
       <div class="animate-fadeInUp delay-4">
         <div class="section-header">
           <div>
-            <h2 class="section-title">🎯 Trigger Deep Dive</h2>
-            <p class="section-desc">AI-detected recurring emotional patterns from your journal and mood data</p>
+            <h2 class="section-title">🔍 AI-Uncovered Hidden Stress Triggers</h2>
+            <p class="section-desc">Generative AI analysis of your daily journaling to uncover emotional patterns that standard trackers miss.</p>
           </div>
         </div>
         <div class="grid-2" style="gap:16px;">

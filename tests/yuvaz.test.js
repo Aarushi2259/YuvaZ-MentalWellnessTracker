@@ -274,7 +274,7 @@ describe('Parent Communication – Message Generation', () => {
   });
 
 // ═══════════════════════════════════════════════════════════
-// UI & XSS Tests
+// Security & UI – XSS Prevention
 // ═══════════════════════════════════════════════════════════
 
 describe('Security & UI – XSS Prevention', () => {
@@ -289,6 +289,45 @@ describe('Security & UI – XSS Prevention', () => {
     const sanitized = DOMPurify.sanitize(maliciousInput);
     expect(sanitized).not.toContain('<script>');
     expect(sanitized).toContain('Hello  world!');
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+// GenAI Problem Statement Alignment Tests
+// ═══════════════════════════════════════════════════════════
+
+describe('GenAI Core Capabilities', () => {
+  // Mock GroqClient for tests
+  global.GroqClient = {
+    chat: jest.fn()
+  };
+
+  test('generateAdaptiveMindfulness constructs correct prompt and returns content', async () => {
+    global.GroqClient.chat.mockResolvedValueOnce({ content: '1. Breathe in. 2. Hold. 3. Breathe out.' });
+    
+    const exercise = await YuvaZAI.generateAdaptiveMindfulness('anxious', 'mock_test_anxiety');
+    
+    expect(global.GroqClient.chat).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({ content: expect.stringContaining('mock_test_anxiety') })
+      ]),
+      expect.any(Object)
+    );
+    expect(exercise).toBe('1. Breathe in. 2. Hold. 3. Breathe out.');
+  });
+
+  test('generateCopingStrategy constructs prompt with specific exam target', async () => {
+    global.GroqClient.chat.mockResolvedValueOnce({ content: 'Drink water and step away for 5 minutes.' });
+    
+    const strategy = await YuvaZAI.generateCopingStrategy('burnout', 'NEET');
+    
+    expect(global.GroqClient.chat).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({ content: expect.stringContaining('NEET') })
+      ]),
+      expect.any(Object)
+    );
+    expect(strategy).toBe('Drink water and step away for 5 minutes.');
   });
 });
 

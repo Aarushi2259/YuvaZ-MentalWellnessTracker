@@ -463,6 +463,40 @@ ${studentName}`
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  // ── Adaptive Mindfulness Generator (GenAI) ────────────────
+  async function generateAdaptiveMindfulness(mood, trigger) {
+    if (typeof GroqClient === 'undefined') return null;
+    const prompt = `You are an expert mindfulness coach for students preparing for competitive exams like JEE/NEET/UPSC.
+The student is currently feeling '${mood}' and their main stress trigger is '${trigger}'.
+Generate a hyper-personalized, 2-minute adaptive mindfulness exercise tailored specifically to this emotional state.
+Respond in plain text (no markdown formatting other than bolding) with exactly 3 short steps. Keep it grounding and practical.`;
+
+    try {
+      const response = await GroqClient.chat([{ role: 'user', content: prompt }], { temperature: 0.6, maxTokens: 150 });
+      return response.content;
+    } catch (e) {
+      console.warn("Failed to generate adaptive mindfulness", e);
+      return null;
+    }
+  }
+
+  // ── Real-time Coping Strategy Generator (GenAI) ───────────
+  async function generateCopingStrategy(trigger, exam) {
+    if (typeof GroqClient === 'undefined') return null;
+    const prompt = `You are a cognitive behavioral coach for Indian students.
+The student is preparing for ${exam} and is struggling with '${trigger}'.
+Provide one highly specific, real-time coping strategy they can use RIGHT NOW to regulate their nervous system and regain focus.
+Keep it under 3 sentences. Be empathetic and highly actionable.`;
+
+    try {
+      const response = await GroqClient.chat([{ role: 'user', content: prompt }], { temperature: 0.5, maxTokens: 100 });
+      return response.content;
+    } catch (e) {
+      console.warn("Failed to generate coping strategy", e);
+      return null;
+    }
+  }
+
   // ── Public API ─────────────────────────────────────────────
   return {
     analyzeJournal,
@@ -470,6 +504,8 @@ ${studentName}`
     generateReadinessIndex,
     generateWeeklySummary,
     generateParentMessage,
+    generateAdaptiveMindfulness,
+    generateCopingStrategy,
     checkSafety,
     analyzeSentiment,
     extractEmotions,

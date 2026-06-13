@@ -1,10 +1,7 @@
 /**
  * YuvaZ – Application Data Store
  * Manages local data, mock datasets, and state persistence.
- * In production, this interfaces with an encrypted backend API.
  */
-
-'use strict';
 
 const YuvaZData = (() => {
   // ── Constants ──────────────────────────────────────────────
@@ -15,7 +12,8 @@ const YuvaZData = (() => {
   const DEFAULT_STATE = {
     user: {
       name: 'Aspirant',
-      exam: 'JEE 2026',
+      targetExam: 'JEE', // Exams: NEET, JEE, CUET, CAT, GATE, UPSC
+      examDate: '2026-05-01',
       streak: 7,
       xp: 1240,
       level: 4,
@@ -114,12 +112,15 @@ const YuvaZData = (() => {
   // ── State Management ───────────────────────────────────────
   let state = null;
 
+  /**
+   * Loads the application state from local storage.
+   * @returns {Object} The current application state.
+   */
   function load() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         state = JSON.parse(raw);
-        // Merge with defaults for new keys
         state = deepMerge(JSON.parse(JSON.stringify(DEFAULT_STATE)), state);
       } else {
         state = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -152,8 +153,17 @@ const YuvaZData = (() => {
     return target;
   }
 
+  /**
+   * Retrieves the current state, loading it if necessary.
+   * @returns {Object} The application state.
+   */
   function getState() { return state || load(); }
 
+  /**
+   * Updates the mood log for today.
+   * @param {Object} moodData - The mood data to save.
+   * @returns {Object} The updated mood log entry.
+   */
   function updateMoodToday(moodData) {
     const s = getState();
     const today = new Date().toISOString().split('T')[0];
@@ -169,6 +179,11 @@ const YuvaZData = (() => {
     return s.moodLog.find(m => m.date === today);
   }
 
+  /**
+   * Adds a new journal entry.
+   * @param {Object} entry - The journal entry data.
+   * @returns {Object} The newly created journal entry.
+   */
   function addJournalEntry(entry) {
     const s = getState();
     const newEntry = {
@@ -182,18 +197,31 @@ const YuvaZData = (() => {
     return newEntry;
   }
 
+  /**
+   * Gets today's mood entry.
+   * @returns {Object|null} Today's mood entry or null.
+   */
   function getTodayMood() {
     const s = getState();
     const today = new Date().toISOString().split('T')[0];
     return s.moodLog.find(m => m.date === today) || null;
   }
 
+  /**
+   * Gets the last 7 days of mood entries.
+   * @returns {Array} Array of mood entries.
+   */
   function getWeekMoods() {
     const s = getState();
     return s.moodLog.slice(-7);
   }
 
-  // ── Structured Log (Prod would ship to backend) ────────────
+  /**
+   * Logs application events.
+   * @param {string} level - Log level (info, warn, error).
+   * @param {string} message - Log message.
+   * @param {Object} [meta] - Additional metadata.
+   */
   function log(level, message, meta = {}) {
     const entry = {
       timestamp: new Date().toISOString(),
@@ -217,6 +245,3 @@ const YuvaZData = (() => {
     log
   };
 })();
-
-// Initialize on load
-YuvaZData.load();

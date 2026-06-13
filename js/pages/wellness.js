@@ -38,6 +38,21 @@ function renderWellness() {
 
       <!-- Wellness Cards Grid -->
       <div class="grid-3" style="gap:20px;">
+        <!-- Adaptive GenAI Card -->
+        <div class="wellness-card animate-fadeInUp"
+          onclick="generateAdaptiveMindfulness()"
+          style="background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(16,185,129,0.1)); border: 2px dashed rgba(124,58,237,0.4);"
+          role="button"
+          aria-label="Generate Adaptive Mindfulness Exercise">
+          <span class="wellness-icon" aria-hidden="true">✨</span>
+          <h3 class="wellness-title">Adaptive Mindfulness</h3>
+          <p class="wellness-desc">AI-generated 2-min exercise tailored to your exact mood today.</p>
+          <div class="wellness-duration">
+            <span class="tag tag-teal">⏱ 2 min</span>
+            <span class="tag tag-purple" style="margin-left:6px;">GenAI</span>
+          </div>
+        </div>
+
         ${filtered.map((w, i) => `
           <div class="wellness-card animate-fadeInUp delay-${Math.min(i+1,6)}"
             onclick="startWellnessActivity('${w.id}')"
@@ -135,13 +150,56 @@ function closeWellnessSession() {
 function completeWellness(id) {
   const state = YuvaZData.getState();
   const activity = state.wellnessActions.find(w => w.id === id);
-  if (!activity) return;
+  const xpGained = activity ? activity.xp : 80;
 
-  state.user.xp += activity.xp;
+  state.user.xp += xpGained;
   YuvaZData.save();
 
   closeWellnessSession();
-  YuvaZComponents.showToast(`${activity.icon} ${activity.title} complete! +${activity.xp} XP 🎉`, 'success');
+  YuvaZComponents.showToast(`Activity complete! +${xpGained} XP 🎉`, 'success');
+}
+
+async function generateAdaptiveMindfulness() {
+  const state = YuvaZData.getState();
+  const topTrigger = state.triggers[0]?.label || 'exam pressure';
+  const mood = YuvaZData.getTodayMood()?.mood || 'stressed';
+
+  YuvaZComponents.showToast('Generating your personalized exercise...', 'info');
+
+  try {
+    const exerciseText = await YuvaZAI.generateAdaptiveMindfulness(mood, topTrigger);
+    
+    if (!exerciseText) throw new Error('No content returned');
+
+    const sessionEl = document.getElementById('wellness-session');
+    if (!sessionEl) return;
+
+    sessionEl.style.display = 'block';
+    sessionEl.innerHTML = `
+      <div class="card" style="border:2px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.05);">
+        <div class="card-header">
+          <span class="card-title">✨ Adaptive Mindfulness (AI Generated)</span>
+          <button class="btn btn-ghost btn-sm" onclick="closeWellnessSession()" aria-label="Close session">✕ Close</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+          <div>
+            <h4 style="font-size:14px;font-weight:700;margin-bottom:12px;">Tailored to your current state:</h4>
+            <p style="font-size:14px;line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;">${DOMPurify.sanitize(exerciseText)}</p>
+          </div>
+          <div style="text-align:center;padding:20px;background:var(--bg-tertiary);border-radius:var(--radius-lg);">
+            <div style="font-size:64px;margin-bottom:16px;animation:floatUp 3s ease-in-out infinite;" aria-hidden="true">🧠</div>
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">This exercise was dynamically generated to counteract your specific stress trigger: ${DOMPurify.sanitize(topTrigger)}.</p>
+            <button class="btn btn-primary btn-block ripple-effect" onclick="completeWellness('adaptive')" aria-label="Mark as complete and earn XP">
+              ✅ Complete (+80 XP)
+            </button>
+          </div>
+        </div>
+      </div>`;
+    sessionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch(e) {
+    YuvaZComponents.showToast('Failed to generate. Using offline breathing exercise.', 'error');
+    startWellnessActivity('breathing');
+  }
 }
 
 function getWellnessGuide(id) {

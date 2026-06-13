@@ -64,6 +64,9 @@ function renderCompanion() {
             "I feel like giving up",
             "Motivate me! 💪"
           ].map(q => `<button class="btn btn-ghost btn-sm" onclick="sendQuickReply('${q}')" aria-label="Quick reply: ${q}">${q}</button>`).join('')}
+          <button class="btn btn-secondary btn-sm" onclick="requestCopingStrategy()" aria-label="Generate tailored coping strategy">
+            ⚡ Need a real-time coping strategy
+          </button>
         </div>
 
         <!-- Input Area -->
@@ -140,6 +143,43 @@ function sendQuickReply(text) {
   const input = document.getElementById('chat-input');
   if (input) input.value = text;
   sendMessage();
+}
+
+async function requestCopingStrategy() {
+  if (isAiTyping) return;
+  const state = YuvaZData.getState();
+  const topTrigger = state.triggers[0]?.label || 'exam pressure';
+  
+  const userMsg = {
+    role: 'user',
+    text: "I need a coping strategy right now.",
+    time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+  };
+  conversationHistory.push(userMsg);
+  appendMessageToDOM(userMsg);
+  scrollToBottom();
+
+  isAiTyping = true;
+  showTypingIndicator();
+
+  try {
+    const strategy = await YuvaZAI.generateCopingStrategy(topTrigger, state.user.targetExam || 'Competitive Exams');
+    removeTypingIndicator();
+    
+    const aiMsg = {
+      role: 'ai',
+      text: strategy || "Take a deep breath. Focus on one small task right now. You've got this.",
+      time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+    };
+    conversationHistory.push(aiMsg);
+    appendMessageToDOM(aiMsg);
+    scrollToBottom();
+  } catch(e) {
+    removeTypingIndicator();
+    YuvaZComponents.showToast('Failed to generate strategy.', 'error');
+  } finally {
+    isAiTyping = false;
+  }
 }
 
 async function sendMessage() {
