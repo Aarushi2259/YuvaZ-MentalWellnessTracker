@@ -101,14 +101,16 @@ function renderAllMessages() {
 
 function renderMessage(msg) {
   const isUser = msg.role === 'user';
-  const formattedText = formatMessageText(msg.text);
+  
+  // Format text and SANITIZE to prevent XSS
+  const formattedText = DOMPurify.sanitize(formatMessageText(msg.text));
 
   return `
     <div class="chat-row ${isUser ? 'user-row' : ''}" role="article" aria-label="${isUser ? 'Your message' : 'YuvaZ response'}">
       ${!isUser ? `<div class="avatar avatar-sm avatar-ai" aria-hidden="true">🤖</div>` : ''}
       <div>
         <div class="chat-bubble ${isUser ? 'user' : 'ai'}">${formattedText}</div>
-        <div class="chat-time" style="text-align:${isUser ? 'right' : 'left'};">${msg.time}</div>
+        <div class="chat-time" style="text-align:${isUser ? 'right' : 'left'};">${DOMPurify.sanitize(msg.time)}</div>
       </div>
       ${isUser ? `<div class="avatar avatar-sm avatar-user" aria-hidden="true">A</div>` : ''}
     </div>`;

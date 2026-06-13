@@ -1,0 +1,27 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "jest": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": ["warn", { "allow": ["warn", "error", "log"] }],
+    "strict": ["error", "global"]
+  },
+  "globals": {
+    "Chart": "readonly",
+    "DOMPurify": "readonly",
+    "YuvaZData": "readonly",
+    "YuvaZAI": "readonly",
+    "YuvaZComponents": "readonly",
+    "YuvaZRouter": "readonly",
+    "YuvaZSafety": "readonly",
+    "GroqClient": "readonly"
+  }
+}

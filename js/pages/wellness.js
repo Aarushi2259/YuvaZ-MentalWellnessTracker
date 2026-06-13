@@ -103,21 +103,21 @@ function startWellnessActivity(id) {
   sessionEl.innerHTML = `
     <div class="card" style="border:2px solid rgba(20,184,166,0.3);background:rgba(20,184,166,0.05);">
       <div class="card-header">
-        <span class="card-title">${activity.icon} ${activity.title}</span>
+        <span class="card-title">${DOMPurify.sanitize(activity.icon)} ${DOMPurify.sanitize(activity.title)}</span>
         <button class="btn btn-ghost btn-sm" onclick="closeWellnessSession()" aria-label="Close session">✕ Close</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
         <div>
           <h4 style="font-size:14px;font-weight:700;margin-bottom:12px;">How to do it:</h4>
           <ol style="padding-left:20px;display:flex;flex-direction:column;gap:10px;">
-            ${guide.steps.map(s => `<li style="font-size:14px;line-height:1.6;color:var(--text-secondary);">${s}</li>`).join('')}
+            ${guide.steps.map(s => `<li style="font-size:14px;line-height:1.6;color:var(--text-secondary);">${DOMPurify.sanitize(s)}</li>`).join('')}
           </ol>
         </div>
         <div style="text-align:center;padding:20px;background:var(--bg-tertiary);border-radius:var(--radius-lg);">
-          <div style="font-size:64px;margin-bottom:16px;animation:floatUp 3s ease-in-out infinite;" aria-hidden="true">${activity.icon}</div>
-          <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">${guide.benefit}</p>
-          <button class="btn btn-primary btn-block ripple-effect" onclick="completeWellness('${id}')" aria-label="Mark as complete and earn XP">
-            ✅ Complete (+${activity.xp} XP)
+          <div style="font-size:64px;margin-bottom:16px;animation:floatUp 3s ease-in-out infinite;" aria-hidden="true">${DOMPurify.sanitize(activity.icon)}</div>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">${DOMPurify.sanitize(guide.benefit)}</p>
+          <button class="btn btn-primary btn-block ripple-effect" onclick="completeWellness('${DOMPurify.sanitize(id)}')" aria-label="Mark as complete and earn XP">
+            ✅ Complete (+${DOMPurify.sanitize(activity.xp)} XP)
           </button>
         </div>
       </div>

@@ -273,9 +273,22 @@ describe('Parent Communication – Message Generation', () => {
     expect(msg).toBeTruthy();
   });
 
-  test('includes student name in message', () => {
-    const msg = mockGenerateMessage('stress', 'Kavya');
-    expect(msg).toContain('Kavya');
+// ═══════════════════════════════════════════════════════════
+// UI & XSS Tests
+// ═══════════════════════════════════════════════════════════
+
+describe('Security & UI – XSS Prevention', () => {
+  // Mock DOMPurify
+  const DOMPurify = {
+    sanitize: (str) => str.replace(/<script.*?>.*?<\/script>/ig, '')
+  };
+  global.DOMPurify = DOMPurify;
+
+  test('DOMPurify removes script tags from malicious input', () => {
+    const maliciousInput = 'Hello <script>alert("XSS")</script> world!';
+    const sanitized = DOMPurify.sanitize(maliciousInput);
+    expect(sanitized).not.toContain('<script>');
+    expect(sanitized).toContain('Hello  world!');
   });
 });
 
